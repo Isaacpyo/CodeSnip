@@ -1,0 +1,41 @@
+{
+  "name": "codesnip",
+  "private": true,
+  "type": "module",
+  "description": "Code snippet manager: React + Supabase + Monaco + Chakra UI",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run dev -w @codesnip/web",
+    "dev:mock": "npm run dev:mock -w @codesnip/web",
+    "build": "npm run build -w @codesnip/web",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck -w @codesnip/web && tsc -p supabase/tests",
+    "test": "npm run test -w @codesnip/web",
+    "test:db": "vitest run --config supabase/tests/vitest.config.ts",
+    "test:e2e": "npm run test:e2e -w @codesnip/web",
+    "db:up": "docker compose up -d --wait db auth migrate rest gateway",
+    "db:reset": "docker compose down -v && npm run db:up",
+    "db:seed": "docker compose run --rm migrate"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.5.0",
+    "@types/pg": "^8.23.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "pg": "^8.23.1",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}
