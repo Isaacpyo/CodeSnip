@@ -1,21 +1,19 @@
-import { ClientOnly, IconButton, Skeleton } from '@chakra-ui/react';
+import { IconButton } from '@chakra-ui/react';
 import { Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { useColorMode } from '../ui/colorMode';
 
 export function ColorModeButton() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const dark = resolvedTheme === 'dark';
+  const { colorMode, setColorMode } = useColorMode();
+  const dark = colorMode === 'dark';
   return (
-    <ClientOnly fallback={<Skeleton boxSize="8" />}>
-      <IconButton
-        variant="ghost"
-        size="sm"
-        aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-        title={dark ? 'Light mode' : 'Dark mode'}
-        onClick={() => setTheme(dark ? 'light' : 'dark')}
-      >
-        {dark ? <Sun /> : <Moon />}
-      </IconButton>
-    </ClientOnly>
+    <IconButton
+      variant="ghost"
+      size="sm"
+      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={dark ? 'Light mode' : 'Dark mode'}
+      onClick={() => setColorMode(dark ? 'light' : 'dark')}
+    >
+      {dark ? <Sun /> : <Moon />}
+    </IconButton>
   );
 }

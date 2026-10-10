@@ -1,9 +1,9 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
-import { ThemeProvider } from 'next-themes';
 import type { ReactNode } from 'react';
 import { AuthProvider } from './auth/AuthProvider';
 import { BackendContext, type BackendContextValue } from './backend/context';
+import { ColorModeProvider } from './ui/ColorModeProvider';
 import { system } from './ui/system';
 import { Toaster } from './ui/Toaster';
 
@@ -18,7 +18,7 @@ export function AppProviders({
 }) {
   return (
     <ChakraProvider value={system}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <ColorModeProvider>
         <QueryClientProvider client={queryClient}>
           <BackendContext.Provider value={backend}>
             <AuthProvider>
@@ -27,7 +27,7 @@ export function AppProviders({
             </AuthProvider>
           </BackendContext.Provider>
         </QueryClientProvider>
-      </ThemeProvider>
+      </ColorModeProvider>
     </ChakraProvider>
   );
 }

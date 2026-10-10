@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import Editor, { type OnMount } from '@monaco-editor/react';
-import { useTheme } from 'next-themes';
 import { useEffect, useRef } from 'react';
+import { useColorMode } from '../ui/colorMode';
 import { monaco } from './monacoSetup';
 
 export interface CodeEditorProps {
@@ -26,7 +26,7 @@ export default function CodeEditor({
   height,
   ariaLabel,
 }: CodeEditorProps) {
-  const { resolvedTheme } = useTheme();
+  const { colorMode } = useColorMode();
   const onSaveRef = useRef(onSave);
   useEffect(() => {
     onSaveRef.current = onSave;
@@ -56,7 +56,7 @@ export default function CodeEditor({
       <Editor
         value={value}
         language={language}
-        theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
+        theme={colorMode === 'dark' ? 'vs-dark' : 'light'}
         onChange={(next) => onChange?.(next ?? '')}
         onMount={handleMount}
         loading={null}

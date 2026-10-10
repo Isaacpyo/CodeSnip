@@ -21,6 +21,10 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
+    files: ['apps/web/public/**/*.js'],
+    languageOptions: { globals: globals.browser, sourceType: 'script' },
+  },
+  {
     files: [
       '**/*.config.{js,ts}',
       'apps/web/e2e/**/*.ts',
