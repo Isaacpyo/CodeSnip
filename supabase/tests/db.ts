@@ -56,7 +56,10 @@ export class Tx {
     return this;
   }
 
-  async query<T extends Row = Row>(sql: string, params: unknown[] = []): Promise<pg.QueryResult<T>> {
+  async query<T extends Row = Row>(
+    sql: string,
+    params: unknown[] = [],
+  ): Promise<pg.QueryResult<T>> {
     return this.client.query<T>(sql, params);
   }
 

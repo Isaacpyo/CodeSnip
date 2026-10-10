@@ -12,7 +12,10 @@ describe('snippet writes', () => {
       const id = await tx.createSnippet(userId, {
         tags: [' React ', 'hooks', 'react', '', 'HOOKS', 'c++'],
       });
-      const [row] = await tx.rows<{ tags: string[] }>('select tags from public.snippets where id = $1', [id]);
+      const [row] = await tx.rows<{ tags: string[] }>(
+        'select tags from public.snippets where id = $1',
+        [id],
+      );
       expect(row?.tags).toEqual(['react', 'hooks', 'c++']);
     });
   });
@@ -21,7 +24,9 @@ describe('snippet writes', () => {
     await withTx(async (tx) => {
       const userId = await tx.createUser();
       const id = await tx.createSnippet(userId, { title: '  Spaced  ', description: '  desc ' });
-      const [row] = await tx.rows('select title, description from public.snippets where id = $1', [id]);
+      const [row] = await tx.rows('select title, description from public.snippets where id = $1', [
+        id,
+      ]);
       expect(row).toEqual({ title: 'Spaced', description: 'desc' });
     });
   });
@@ -79,7 +84,9 @@ describe('snippet writes', () => {
       await tx.query(
         `insert into public.snippets (title, code) select 'bulk ' || g, 'x' from generate_series(1, 2000) g`,
       );
-      const err = await tx.error(`insert into public.snippets (title, code) values ('one more', 'x')`);
+      const err = await tx.error(
+        `insert into public.snippets (title, code) values ('one more', 'x')`,
+      );
       expect(err.code).toBe('54000');
       expect(err.message).toMatch(/2000/);
     });
@@ -127,7 +134,10 @@ describe('search_snippets', () => {
   it('ranks title matches above code matches', async () => {
     await withTx(async (tx) => {
       const userId = await tx.createUser();
-      const inCode = await tx.createSnippet(userId, { title: 'Something', code: 'const zebra = 1;' });
+      const inCode = await tx.createSnippet(userId, {
+        title: 'Something',
+        code: 'const zebra = 1;',
+      });
       const inTitle = await tx.createSnippet(userId, { title: 'Zebra stripes', code: 'x' });
       await tx.as({ userId });
       const { sql, params } = search({ search: 'zebra' });
@@ -140,7 +150,13 @@ describe('search_snippets', () => {
   it('treats search input as plain text, never tsquery syntax', async () => {
     await withTx(async (tx) => {
       await tx.as({ userId: DEMO_ID });
-      for (const input of ["foo:* | bar & !baz", "'; drop table snippets; --", '(((', 'the', '100%_']) {
+      for (const input of [
+        'foo:* | bar & !baz',
+        "'; drop table snippets; --",
+        '(((',
+        'the',
+        '100%_',
+      ]) {
         const { sql, params } = search({ search: input });
         await expect(tx.rows(sql, params), input).resolves.toBeInstanceOf(Array);
       }
@@ -264,7 +280,9 @@ describe('snippet_facets', () => {
       await tx.as('anon');
       const rows = await tx.rows<Facet>(`select * from public.snippet_facets('public')`);
       expect(rows.map((r) => r.value)).not.toContain('private-draft');
-      expect(rows.filter((r) => r.kind === 'language').reduce((s, r) => s + Number(r.count), 0)).toBe(7);
+      expect(
+        rows.filter((r) => r.kind === 'language').reduce((s, r) => s + Number(r.count), 0),
+      ).toBe(7);
     });
   });
 });
@@ -275,7 +293,9 @@ describe('languages', () => {
       const rows = await tx.rows<{ id: string; label: string }>(
         'select id, label from public.languages order by id',
       );
-      const app = [...LANGUAGES].map(({ id, label }) => ({ id, label })).sort((a, b) => a.id.localeCompare(b.id));
+      const app = [...LANGUAGES]
+        .map(({ id, label }) => ({ id, label }))
+        .sort((a, b) => a.id.localeCompare(b.id));
       expect(rows).toEqual(app);
     });
   });

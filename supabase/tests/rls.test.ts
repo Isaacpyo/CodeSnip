@@ -47,9 +47,7 @@ describe('snippets: anonymous visitors', () => {
   it('cannot insert, update or delete', async () => {
     await withTx(async (tx) => {
       await tx.as('anon');
-      const insert = await tx.error(
-        `insert into public.snippets (title, code) values ('x', 'y')`,
-      );
+      const insert = await tx.error(`insert into public.snippets (title, code) values ('x', 'y')`);
       expect(insert.code).toBe(INSUFFICIENT_PRIVILEGE);
       const update = await tx.error(`update public.snippets set title = 'pwned' where id = $1`, [
         DEMO_PUBLIC_SNIPPET_ID,
@@ -70,7 +68,9 @@ describe('snippets: signed-in users', () => {
       const rows = await tx.rows<{ owner_id: string; visibility: string }>(
         'select owner_id, visibility from public.snippets',
       );
-      const foreignPrivate = rows.filter((r) => r.owner_id !== DEMO_ID && r.visibility === 'private');
+      const foreignPrivate = rows.filter(
+        (r) => r.owner_id !== DEMO_ID && r.visibility === 'private',
+      );
       expect(foreignPrivate).toEqual([]);
       expect(rows.some((r) => r.owner_id === DEMO_ID && r.visibility === 'private')).toBe(true);
       expect(rows.some((r) => r.owner_id === ADA_ID && r.visibility === 'public')).toBe(true);
@@ -226,7 +226,9 @@ describe('profiles', () => {
       expect(visible.map((r) => r.id)).not.toContain(quiet);
 
       await tx.as({ userId: quiet });
-      expect(await tx.rows('select id from public.profiles where id = $1', [quiet])).toHaveLength(1);
+      expect(await tx.rows('select id from public.profiles where id = $1', [quiet])).toHaveLength(
+        1,
+      );
     });
   });
 
@@ -295,7 +297,9 @@ describe('languages', () => {
     await withTx(async (tx) => {
       await tx.as('anon');
       expect((await tx.rows('select id from public.languages')).length).toBeGreaterThan(10);
-      const err = await tx.error(`insert into public.languages (id, label) values ('cobol', 'COBOL')`);
+      const err = await tx.error(
+        `insert into public.languages (id, label) values ('cobol', 'COBOL')`,
+      );
       expect(err.code).toBe(INSUFFICIENT_PRIVILEGE);
     });
   });

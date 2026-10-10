@@ -6,19 +6,19 @@ filters, and share the public ones with a link.
 
 ## Stack (as specified, no swaps)
 
-| Concern            | Choice                                                         |
-| ------------------ | -------------------------------------------------------------- |
-| Frontend           | React 19 + Vite + TypeScript (strict), Chakra UI v3            |
-| Editor             | Monaco (`@monaco-editor/react`, bundled locally, no CDN)       |
-| Auth               | Supabase Auth (email/password + GitHub OAuth)                  |
-| Database / API     | Supabase Postgres, exposed through PostgREST                   |
-| Authorization      | Postgres Row Level Security policies + column grants           |
-| Search             | Postgres full-text search (weighted `tsvector` + GIN index)    |
-| Hosting            | Netlify (web), Supabase free tier (auth + db + API)            |
+| Concern        | Choice                                                      |
+| -------------- | ----------------------------------------------------------- |
+| Frontend       | React 19 + Vite + TypeScript (strict), Chakra UI v3         |
+| Editor         | Monaco (`@monaco-editor/react`, bundled locally, no CDN)    |
+| Auth           | Supabase Auth (email/password + GitHub OAuth)               |
+| Database / API | Supabase Postgres, exposed through PostgREST                |
+| Authorization  | Postgres Row Level Security policies + column grants        |
+| Search         | Postgres full-text search (weighted `tsvector` + GIN index) |
+| Hosting        | Netlify (web), Supabase free tier (auth + db + API)         |
 
 ### No `apps/api`, no `render.yaml`
 
-Supabase *is* the backend: GoTrue handles auth, PostgREST turns the schema into
+Supabase _is_ the backend: GoTrue handles auth, PostgREST turns the schema into
 a REST API, and RLS enforces who can read and write each row. Adding a Node
 service on Render would duplicate PostgREST and add a cold-starting hop
 between the browser and the database, so there is no `apps/api` and therefore
@@ -50,7 +50,7 @@ docker-compose.yml        Local Supabase (postgres, gotrue, postgrest, gateway) 
   snippets); users may update only `display_name`/`avatar_url`.
 - `languages(id, label)` — lookup table, FK target for `snippets.language`.
 - `snippets(id, owner_id → profiles, title, description, code, language, tags[],
-  visibility 'private'|'public', created_at, updated_at, search_vector)`.
+visibility 'private'|'public', created_at, updated_at, search_vector)`.
   - `owner_id` defaults to `auth.uid()` and is not insertable/updatable through
     the API (column grants) — RLS `with check` is the second layer.
   - A `before insert/update` trigger normalises tags (trim, lowercase, dedupe),
@@ -63,11 +63,11 @@ docker-compose.yml        Local Supabase (postgres, gotrue, postgrest, gateway) 
 
 ## RLS policies
 
-| Table      | anon                     | authenticated                                   |
-| ---------- | ------------------------ | ----------------------------------------------- |
-| snippets   | select public            | select public **or own**; insert/update/delete own |
-| profiles   | select                   | select; update own (limited columns)            |
-| languages  | select                   | select                                          |
+| Table     | anon          | authenticated                                      |
+| --------- | ------------- | -------------------------------------------------- |
+| snippets  | select public | select public **or own**; insert/update/delete own |
+| profiles  | select        | select; update own (limited columns)               |
+| languages | select        | select                                             |
 
 All policies use `(select auth.uid())` so the uid is evaluated once per
 statement. RPCs are `security invoker`, so they can never see more than a

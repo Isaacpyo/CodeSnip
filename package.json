@@ -22,7 +22,8 @@
     "test:e2e": "npm run test:e2e -w @codesnip/web",
     "db:up": "docker compose up -d --wait db auth migrate rest gateway",
     "db:reset": "docker compose down -v && npm run db:up",
-    "db:seed": "docker compose run --rm migrate"
+    "db:seed": "docker compose run --rm migrate",
+    "db:types": "npx --yes supabase@2.120.0 gen types typescript --db-url \"postgresql://postgres:postgres@localhost:54322/postgres?sslmode=disable\" --schema public > apps/web/src/backend/database.types.ts && prettier --write apps/web/src/backend/database.types.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
