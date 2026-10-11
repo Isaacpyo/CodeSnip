@@ -3,6 +3,14 @@ import { LANGUAGES } from '../../apps/web/src/lib/languages';
 import { ADA_ID, ADA_PRIVATE_SNIPPET_ID, DEMO_ID, withTx } from './db';
 
 const CHECK_VIOLATION = '23514';
+
+type SnippetFields = Partial<{
+  title: string;
+  code: string;
+  language: string;
+  tags: string[];
+  visibility: string;
+}>;
 const FK_VIOLATION = '23503';
 
 describe('snippet writes', () => {
@@ -38,8 +46,8 @@ describe('snippet writes', () => {
     ['a tag with spaces', { tags: ['two words'] }, CHECK_VIOLATION],
     ['eleven tags', { tags: Array.from({ length: 11 }, (_, i) => `t${i}`) }, CHECK_VIOLATION],
     ['an unknown language', { language: 'brainfuck' }, FK_VIOLATION],
-    ['an unknown visibility', { visibility: 'unlisted' as 'public' }, CHECK_VIOLATION],
-  ])('reject %s', async (_label, fields, code) => {
+    ['an unknown visibility', { visibility: 'unlisted' }, CHECK_VIOLATION],
+  ] as [string, SnippetFields, string][])('reject %s', async (_label, fields, code) => {
     await withTx(async (tx) => {
       const userId = await tx.createUser();
       await tx.as({ userId });
