@@ -30,7 +30,7 @@ export default defineConfig([
       '**/*.config.{js,ts}',
       'apps/web/e2e/**/*.ts',
       'supabase/**/*.ts',
-      'scripts/**/*.{js,ts}',
+      'scripts/**/*.{js,mjs,ts}',
     ],
     languageOptions: { globals: globals.node },
   },

@@ -133,5 +133,21 @@ services:
       timeout: 5s
       retries: 20
 
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_BACKEND: supabase
+        # The browser calls the gateway on the host, so this is a host URL.
+        VITE_SUPABASE_URL: ${API_EXTERNAL_URL:-http://localhost:54321}
+        # Must be signed with JWT_SECRET (see scripts/generate-keys.mjs).
+        VITE_SUPABASE_ANON_KEY: ${ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
+    depends_on:
+      gateway:
+        condition: service_healthy
+    ports:
+      - '${WEB_PORT:-3000}:8080'
+
 volumes:
   db-data:
