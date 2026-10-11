@@ -54,7 +54,10 @@ export default function CodeEditor({
       colorPalette="teal"
     >
       <Editor
-        value={value}
+        // Editable editors are uncontrolled: feeding React state back into
+        // Monaco on every keystroke races with fast typing and drops input.
+        // The form remounts the editor (by key) when it loads a different snippet.
+        {...(readOnly ? { value } : { defaultValue: value })}
         language={language}
         theme={colorMode === 'dark' ? 'vs-dark' : 'light'}
         onChange={(next) => onChange?.(next ?? '')}

@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:supabase": "E2E_BACKEND=supabase playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",

@@ -110,7 +110,14 @@ function SnippetForm({ snippet }: { snippet?: Snippet }) {
 
   const initial = useMemo(() => (snippet ? toInput(snippet) : EMPTY), [snippet]);
   const [baseline, setBaseline] = useState(initial);
-  const [values, setValues] = useState(initial);
+  const [values, setValuesState] = useState(initial);
+  // Mirror of `values` updated synchronously, so a Cmd/Ctrl+S pressed right
+  // after a keystroke saves what's on screen, not the previous render's state.
+  const valuesRef = useRef(initial);
+  const setValues = useCallback((next: (current: SnippetInput) => SnippetInput) => {
+    valuesRef.current = next(valuesRef.current);
+    setValuesState(valuesRef.current);
+  }, []);
   const [errors, setErrors] = useState<SnippetFieldErrors>({});
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -127,7 +134,8 @@ function SnippetForm({ snippet }: { snippet?: Snippet }) {
 
   const save = useCallback(() => {
     if (saving) return;
-    const result = validateSnippet(values);
+    const submitted = valuesRef.current;
+    const result = validateSnippet(submitted);
     if (!result.ok) {
       setErrors(result.errors);
       notify.warning('Please fix the highlighted fields');
@@ -150,14 +158,15 @@ function SnippetForm({ snippet }: { snippet?: Snippet }) {
           onSuccess: (saved) => {
             const next = toInput(saved);
             setBaseline(next);
-            setValues(next);
+            // Adopt the server's normalised values unless the user kept typing meanwhile.
+            setValues((current) => (sameInput(current, submitted) ? next : current));
             notify.success('Changes saved');
           },
           onError: (error) => notify.error(error, 'Couldn’t save your changes'),
         },
       );
     }
-  }, [create, isNew, navigate, saving, snippet, update, values]);
+  }, [create, isNew, navigate, saving, setValues, snippet, update]);
 
   const changeVisibility = (visibility: Visibility) => {
     if (!snippet) return;

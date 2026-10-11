@@ -11,9 +11,8 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Code2, Compass, Library, LogIn, LogOut, Plus } from 'lucide-react';
-import { NavLink, Link as RouterLink, useNavigate } from 'react-router';
+import { NavLink, Link as RouterLink } from 'react-router';
 import { useAuth } from '../auth/context';
-import { useBackend } from '../backend/context';
 import { useProfile } from '../hooks/queries';
 import { notify } from '../ui/notify';
 import { ColorModeButton } from './ColorModeButton';
@@ -37,16 +36,14 @@ function NavItem({ to, icon, label }: { to: string; icon: React.ReactNode; label
 }
 
 export function Header() {
-  const { user, status } = useAuth();
+  const { user, status, signOut: authSignOut } = useAuth();
   const profile = useProfile();
-  const backend = useBackend();
-  const navigate = useNavigate();
   const name = profile.data?.displayName || user?.email || 'You';
 
   const signOut = async () => {
     try {
-      await backend.auth.signOut();
-      navigate('/');
+      // On /app pages RequireAuth then sends the user home; public pages stay put.
+      await authSignOut();
     } catch (error) {
       notify.error(error, 'Couldn’t sign out');
     }

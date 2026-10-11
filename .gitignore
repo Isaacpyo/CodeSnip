@@ -12,3 +12,4 @@ blob-report/
 .vite/
 supabase/.branches/
 supabase/.temp/
+dist-e2e-*
