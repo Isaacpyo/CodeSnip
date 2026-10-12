@@ -1,0 +1,28 @@
+name: Reset demo data
+
+# Re-runs supabase/seed.sql against the hosted project so the shared demo
+# account starts every day clean. seed.sql is idempotent: it only replaces the
+# demo and community users' snippets. Needs the SUPABASE_DB_URL secret.
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - name: Check configuration
+        if: env.SUPABASE_DB_URL == ''
+        run: echo "::notice::SUPABASE_DB_URL is not set; skipping the demo reset."
+      - uses: actions/checkout@v5
+        if: env.SUPABASE_DB_URL != ''
+      - name: Re-run seed.sql
+        if: env.SUPABASE_DB_URL != ''
+        run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 --single-transaction --quiet -f supabase/seed.sql

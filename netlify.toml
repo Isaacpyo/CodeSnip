@@ -1,7 +1,35 @@
+# Netlify builds the Vite SPA in apps/web. Dependencies are installed from the
+# npm workspace at the repo root (package-lock.json).
 [build]
-  base = "frontend"
+  base = "apps/web"
   command = "npm run build"
-  publish = ".next"
+  publish = "dist"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+[build.environment]
+  NODE_VERSION = "22"
+  # VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in the Netlify UI.
+  # Without them the site runs in offline demo mode (in-browser mock backend).
+
+# Client-side routing: every path serves the SPA.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    # Styles need 'unsafe-inline' (Emotion and Monaco inject them); scripts do not.
+    # If you put Supabase behind a custom domain, add it to connect-src.
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+# Hashed build assets never change.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
