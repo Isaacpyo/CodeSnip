@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
-  // One .env at the repo root serves Vite, docker compose and the test tooling.
+  // One .env at the repo root serves both Vite and docker compose.
   envDir: '../..',
   server: { port: 5173, strictPort: true },
   preview: { port: 4173, strictPort: true },
