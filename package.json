@@ -3,6 +3,13 @@
   "private": true,
   "type": "module",
   "description": "Code snippet manager: React + Supabase + Monaco + Chakra UI",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/temitopeagbola/CodeSnip.git"
+  },
+  "bugs": {
+    "url": "https://github.com/temitopeagbola/CodeSnip/issues"
+  },
   "workspaces": [
     "apps/*"
   ],

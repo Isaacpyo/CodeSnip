@@ -28,7 +28,11 @@ export function AppShell() {
         <Container maxW="7xl" px={{ base: '3', md: '6' }}>
           <HStack justify="space-between" flexWrap="wrap" gap="2">
             <Text>CodeSnip · React, Supabase, Monaco and Chakra UI</Text>
-            <Link href="https://github.com/isaacpyo/codesnip" target="_blank" rel="noreferrer">
+            <Link
+              href="https://github.com/temitopeagbola/CodeSnip"
+              target="_blank"
+              rel="noreferrer"
+            >
               Source on GitHub
             </Link>
           </HStack>
